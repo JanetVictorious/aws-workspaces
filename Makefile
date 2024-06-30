@@ -1,3 +1,6 @@
+-include env.sh
+export
+
 tag = 1.0
 
 help: ## Display this help screen
@@ -7,7 +10,7 @@ build-image: ## Build docker image
 	@set -eu && \
 	docker build -t aws-workspaces:$(tag) .
 
-run-aws-workspaces: ## Run aws-workspaces image
+run-docker-aws-workspaces: ## Run aws-workspaces using docker
 	@set -eu && \
 	xhost + && \
 	exec /usr/bin/docker run -it --rm --name aws-workspaces \
@@ -15,3 +18,9 @@ run-aws-workspaces: ## Run aws-workspaces image
 		-v "$(HOME)/.aws-workspaces":"/root/.local/share/Amazon Web Services" \
 		-e DISPLAY=$(DISPLAY) \
 		aws-workspaces:$(tag)
+
+run-nix-aws-workspaces: ## Run aws-workspaces using nix
+	@nix-shell -p aws-workspaces --run workspacesclient
+
+free-nix: ## Free up disk from nix packages
+	@nix-collect-garbage
